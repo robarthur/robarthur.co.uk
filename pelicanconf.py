@@ -26,6 +26,9 @@ AUTHOR_FEED_RSS = None
 # Blogroll
 LINKS = ( )
 
+SOCIAL = (('linkedin', 'https://www.linkedin.com/in/rob-arthur-88016840/'),
+          ('github', 'https://github.com/robarthur'),
+          ('twitter', 'https://twitter.com/rob_arthur1'))
 
 DEFAULT_PAGINATION = 10
 
