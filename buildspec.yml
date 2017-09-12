@@ -1,0 +1,15 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - pip install -r requirements.txt
+  build:
+    commands:
+      - echo Generating web output - `date`
+      - make clean -C web/
+      - make html -C web/
+  post_build:
+    commands:
+      - aws s3 sync --delete web/output/ s3://robarthur.co.uk/
+      - echo Build completed on `date`
