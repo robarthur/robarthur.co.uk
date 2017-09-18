@@ -42,3 +42,4 @@ THEME = 'themes/flex'
 COPYRIGHT_YEAR = 2017
 
 PLUGIN_PATHS = ['./pelican-plugins']
+PLUGINS = ['representative_image']
