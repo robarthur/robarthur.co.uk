@@ -107,6 +107,7 @@ Resources:
         DefaultRootObject: index.html
         Aliases:
         - !Ref 'FullDomainName'
+        - !Ref 'DomainName'
         DefaultCacheBehavior:
           AllowedMethods:
           - GET
