@@ -9,11 +9,11 @@ SITENAME = 'Rob Arthur'
 SITETITLE = 'Rob Arthur'
 SITESUBTITLE = 'Personal Blog for notes, thoughts and experiments'
 SITEDESCRIPTION = 'Personal Blog of Rob Arthur, interested in software development, devops, AWS/Cloud.'
-SITELOGO = 'http://s.gravatar.com/avatar/ed179e15a36dcb39b4e0b91633533499?s=240'
+SITELOGO = 'https://s.gravatar.com/avatar/ed179e15a36dcb39b4e0b91633533499?s=240'
 FAVICON = '/images/favicon.ico'
 
 PATH = 'content'
-STATIC_PATHS = ['images', 'extra']
+STATIC_PATHS = ['images']
 
 TIMEZONE = 'Europe/London'
 
@@ -27,19 +27,44 @@ AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
 
 # Blogroll
+MAIN_MENU = True
+
 LINKS = ( )
 
 SOCIAL = (('linkedin', 'https://www.linkedin.com/in/rob-arthur-88016840/'),
           ('github', 'https://github.com/robarthur'),
           ('twitter', 'https://twitter.com/rob_arthur1'))
 
+MENUITEMS = (('Archives', '/archives.html'),
+             ('Categories', '/categories.html'),
+             ('Tags', '/tags.html'),)
+
 DEFAULT_PAGINATION = 10
+
+#Integrations
+GOOGLE_ANALYTICS = 'UA-106756061-1'
+PYGMENTS_STYLE = 'friendly'
 
 # Uncomment following line if you want document-relative URLs when developing
 RELATIVE_URLS = True
 
 THEME = 'themes/flex'
 COPYRIGHT_YEAR = 2017
+DEFAULT_PAGINATION = 5
 
-PLUGIN_PATHS = ['./pelican-plugins']
-PLUGINS = ['representative_image']
+PLUGIN_PATHS = ['./pelican-plugins/']
+PLUGINS = ['post_stats','sitemap']
+
+SITEMAP = {
+    'format': 'xml',
+    'priorities': {
+        'articles': 0.6,
+        'indexes': 0.6,
+        'pages': 0.5,
+    },
+    'changefreqs': {
+        'articles': 'monthly',
+        'indexes': 'daily',
+        'pages': 'monthly',
+    }
+}
