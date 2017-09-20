@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 AUTHOR = 'Rob Arthur'
 COPYRIGHT_NAME = 'Rob Arthur'
-SITEURL = '//www.robarthur.co.uk'
+SITEURL = 'https://www.robarthur.co.uk'
 SITENAME = 'Rob Arthur | Blog'
 SITETITLE = 'Rob Arthur | Blog'
 SITESUBTITLE = 'Personal Blog for notes, thoughts and experiments'
@@ -46,7 +46,7 @@ GOOGLE_ANALYTICS = 'UA-106756061-1'
 PYGMENTS_STYLE = 'friendly'
 
 # Uncomment following line if you want document-relative URLs when developing
-#RELATIVE_URLS = True
+RELATIVE_URLS = True
 
 THEME = 'themes/flex'
 COPYRIGHT_YEAR = 2017
