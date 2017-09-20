@@ -4,12 +4,12 @@ from __future__ import unicode_literals
 
 AUTHOR = 'Rob Arthur'
 COPYRIGHT_NAME = 'Rob Arthur'
-SITEURL = 'robarthur.co.uk'
-SITENAME = 'Rob Arthur'
-SITETITLE = 'Rob Arthur'
+SITEURL = '//www.robarthur.co.uk'
+SITENAME = 'Rob Arthur | Blog'
+SITETITLE = 'Rob Arthur | Blog'
 SITESUBTITLE = 'Personal Blog for notes, thoughts and experiments'
 SITEDESCRIPTION = 'Personal Blog of Rob Arthur, interested in software development, devops, AWS/Cloud.'
-SITELOGO = 'https://s.gravatar.com/avatar/ed179e15a36dcb39b4e0b91633533499?s=240'
+SITELOGO = '//s.gravatar.com/avatar/ed179e15a36dcb39b4e0b91633533499?s=240'
 FAVICON = '/images/favicon.ico'
 
 PATH = 'content'
@@ -46,7 +46,7 @@ GOOGLE_ANALYTICS = 'UA-106756061-1'
 PYGMENTS_STYLE = 'friendly'
 
 # Uncomment following line if you want document-relative URLs when developing
-RELATIVE_URLS = False
+#RELATIVE_URLS = True
 
 THEME = 'themes/flex'
 COPYRIGHT_YEAR = 2017
