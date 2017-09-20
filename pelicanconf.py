@@ -46,7 +46,7 @@ GOOGLE_ANALYTICS = 'UA-106756061-1'
 PYGMENTS_STYLE = 'friendly'
 
 # Uncomment following line if you want document-relative URLs when developing
-RELATIVE_URLS = True
+RELATIVE_URLS = False
 
 THEME = 'themes/flex'
 COPYRIGHT_YEAR = 2017
