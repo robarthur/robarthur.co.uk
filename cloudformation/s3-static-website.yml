@@ -104,7 +104,6 @@ Resources:
             OriginProtocolPolicy: http-only
         Enabled: true
         HttpVersion: 'http2'
-        DefaultRootObject: index.html
         Aliases:
         - !Ref 'FullDomainName'
         - !Ref 'DomainName'
@@ -118,6 +117,8 @@ Resources:
             QueryString: true
             Cookies:
               Forward: none
+            Headers:
+              - Origin
           ViewerProtocolPolicy: redirect-to-https
         PriceClass: PriceClass_All
         ViewerCertificate:
