@@ -3,3 +3,4 @@ env/
 *.pyc
 output/
 *.pid
+__pycache__/

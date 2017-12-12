@@ -13,6 +13,7 @@ SITELOGO = '//s.gravatar.com/avatar/ed179e15a36dcb39b4e0b91633533499?s=240'
 FAVICON = '/images/favicon.ico'
 
 PATH = 'content'
+IGNORE_FILES = ['content/draft/*']
 STATIC_PATHS = ['images']
 
 TIMEZONE = 'Europe/London'
@@ -46,14 +47,17 @@ GOOGLE_ANALYTICS = 'UA-106756061-1'
 PYGMENTS_STYLE = 'friendly'
 
 # Uncomment following line if you want document-relative URLs when developing
-RELATIVE_URLS = True
+#RELATIVE_URLS = True
 
 THEME = 'themes/flex'
 COPYRIGHT_YEAR = 2017
 DEFAULT_PAGINATION = 5
 
+MARKUP = ('md', 'ipynb')
+IGNORE_FILES = ['.ipynb_checkpoints']
+IPYNB_USE_META_SUMMARY=True
 PLUGIN_PATHS = ['./pelican-plugins/']
-PLUGINS = ['post_stats','sitemap']
+PLUGINS = ['post_stats','sitemap','ipynb.markup']
 
 SITEMAP = {
     'format': 'xml',
