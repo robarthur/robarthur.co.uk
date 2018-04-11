@@ -4,3 +4,8 @@ env/
 output/
 *.pid
 __pycache__/
+
+.ipython
+.cache
+.local
+.ipynb_checkpoints
