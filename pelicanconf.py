@@ -55,9 +55,9 @@ DEFAULT_PAGINATION = 5
 
 MARKUP = ('md', 'ipynb')
 IGNORE_FILES = ['.ipynb_checkpoints']
-IPYNB_USE_META_SUMMARY=True
+#IPYNB_USE_META_SUMMARY=True
 PLUGIN_PATHS = ['./pelican-plugins/']
-PLUGINS = ['post_stats','sitemap','ipynb.markup']
+PLUGINS = ['sitemap','ipynb.markup']
 
 SITEMAP = {
     'format': 'xml',
