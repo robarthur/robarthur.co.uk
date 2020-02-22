@@ -16,7 +16,7 @@ PATH = 'content'
 IGNORE_FILES = ['content/draft/*']
 STATIC_PATHS = ['images']
 
-TIMEZONE = 'Europe/London'
+TIMEZONE = 'America/New_York'
 
 DEFAULT_LANG = u'en'
 
@@ -49,15 +49,15 @@ PYGMENTS_STYLE = 'friendly'
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
 
-THEME = 'themes/flex'
-COPYRIGHT_YEAR = 2017
+THEME = 'pelican-themes/Flex'
+COPYRIGHT_YEAR = 2020
 DEFAULT_PAGINATION = 5
 
 MARKUP = ('md', 'ipynb')
 IGNORE_FILES = ['.ipynb_checkpoints']
 IPYNB_USE_META_SUMMARY=True
 PLUGIN_PATHS = ['./pelican-plugins/']
-PLUGINS = ['post_stats','sitemap','ipynb.markup']
+PLUGINS = ['post_stats','sitemap','pelican-ipynb.markup']
 
 SITEMAP = {
     'format': 'xml',
