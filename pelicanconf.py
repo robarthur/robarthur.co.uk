@@ -14,7 +14,8 @@ FAVICON = '/images/favicon.ico'
 
 PATH = 'content'
 IGNORE_FILES = ['content/draft/*']
-STATIC_PATHS = ['images']
+STATIC_PATHS = ['images', 'extra/CNAME']
+EXTRA_PATH_METADATA = {'extra/CNAME': {'path': 'CNAME'},}
 
 TIMEZONE = 'America/New_York'
 
@@ -47,7 +48,7 @@ GOOGLE_ANALYTICS = 'UA-106756061-1'
 PYGMENTS_STYLE = 'friendly'
 
 # Uncomment following line if you want document-relative URLs when developing
-#RELATIVE_URLS = True
+RELATIVE_URLS = True
 
 THEME = 'pelican-themes/Flex'
 COPYRIGHT_YEAR = 2020

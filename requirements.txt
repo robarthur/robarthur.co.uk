@@ -9,6 +9,7 @@ defusedxml==0.6.0
 docutils==0.16
 entrypoints==0.3
 feedgenerator==1.9.1
+ghp-import==0.5.5
 importlib-metadata==1.5.0
 ipython==7.12.0
 ipython-genutils==0.2.0
