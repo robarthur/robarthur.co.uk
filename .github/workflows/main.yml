@@ -31,4 +31,5 @@ jobs:
         make html
     - name: Publish
       run: |
+        git pull origin gh-pages
         ghp-import output/ -p
