@@ -35,4 +35,6 @@ jobs:
         make html
     - name: Publish
       run: |
+        git config --global user.name 'Rob Arthur'
+        git config --global user.email 'robarthur@users.noreply.github.com'
         ghp-import output/ -p
