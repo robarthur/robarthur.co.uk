@@ -10,7 +10,6 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
     - name: Set up Python 3.7
       uses: actions/setup-python@v1
       with:
@@ -33,7 +32,14 @@ jobs:
       run: |
         remote_repo="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
         remote_branch=${GH_PAGES_BRANCH:=gh-pages}
-        git remote add deploy "$remote_repo"
+        git init
+        git remote add output "$remote_repo"
+        git checkout $remote_branch || git checkout --orphan $remote_branch
         git config user.name "${GITHUB_ACTOR}"
         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-        ghp-import output/ -p
+        git add .
+        echo -n 'Files to Commit:' && ls -l | wc -l
+        timestamp=$(date +%s%3N)
+        git commit -m "[ci skip] Automated deployment to GitHub Pages on $timestamp"
+        git push output $remote_branch --force
+        rm -fr .git
