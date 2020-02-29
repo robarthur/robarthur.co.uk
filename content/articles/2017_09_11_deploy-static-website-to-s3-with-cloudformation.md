@@ -28,7 +28,7 @@ Key services utilised are:
 
 A **Cloudformation template** defines all of the website infrastructure as code.  The template used to build the hosting infrastructure is defined here: 
 
-![https://github.com/robarthur/robarthur.co.uk/blob/master/cloudformation/s3-static-website.yml](https://github.com/robarthur/robarthur.co.uk/blob/master/cloudformation/s3-static-website.yml){.word-wrap:break-word} 
+<https://github.com/robarthur/robarthur.co.uk/blob/master/cloudformation/s3-static-website.yml>
 
 Credit to *Sergej Jevsejev*, for the [basis of this template](https://github.com/sjevs/cloudformation-s3-static-website-with-cloudfront-and-route-53).
 
@@ -40,15 +40,14 @@ We need to pass a number of parameters to this **Cloudformation stack**, these a
 
 Assuming you have these and AWS credentials credentials configured with appropriate IAM priviliges, you could deploy this blog from the command line using the following command:
 
-```shell
-git clone https://github.com/robarthur/robarthur.co.uk.git
-cd robarthur.co.uk
-aws cloudformtaion create-stack --stack-name s3-static-website \
-	--template-body file://cloudformation/s3-static-website.yml
-	--parameters  ParameterKey=DomainName,ParameterValue=mywebsite.com ParameterKey=FullDomainName, \
-				  ParameterValue=www.mywebsite.com ParameterKey=AcmCertificateArn, \
-				  ParameterValue=arn:aws:acm:us-east-1:1234567890:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-```
+	:::bash
+	git clone https://github.com/robarthur/robarthur.co.uk.git
+	cd robarthur.co.uk
+	aws cloudformtaion create-stack --stack-name s3-static-website \
+		--template-body file://cloudformation/s3-static-website.yml
+		--parameters  ParameterKey=DomainName,ParameterValue=mywebsite.com ParameterKey=FullDomainName, \
+					  ParameterValue=www.mywebsite.com ParameterKey=AcmCertificateArn, \
+					  ParameterValue=arn:aws:acm:us-east-1:1234567890:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
 ## Future Enhancements
 
