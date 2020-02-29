@@ -22,6 +22,7 @@ endif
 PAGESDIR=$(INPUTDIR)/articles
 DATE := $(shell date +'%Y-%m-%d %H:%M:%S')
 SLUG := $(shell echo '${NAME}' | sed -e 's/[^[:alnum:]]/-/g' | tr -s '-' | tr A-Z a-z)
+FILENAME=$(shell date +%Y)_$(shell date +%m)_$(shell date +%d)_$(SLUG)
 EXT=md
 
 EDITOR=subl
@@ -41,8 +42,6 @@ help:
 	@echo '   make rsync_upload		   upload the web site via rsync+ssh  '
 	@echo '   make newpost			generate a new post file	   '
 	@echo '   make editpost		       edit an  existing post file	'
-	@echo '   make newpage			generage a new page file	   '
-	@echo '   make editpage		       edit an existing page file	 '
 	@echo '									  '
 	@echo 'Set the DEBUG variable to 1 to enable debugging, e.g. make DEBUG=1 html   '
 	@echo 'Set the RELATIVE variable to 1 to enable relative urls		    '
@@ -84,10 +83,12 @@ publish:
 
 newpost:
 ifdef NAME
-	echo "Title: $(NAME)" >  $(INPUTDIR)/$(SLUG).$(EXT)
-	echo "Slug: $(SLUG)" >> $(INPUTDIR)/$(SLUG).$(EXT)
-	echo "Date: $(DATE)" >> $(INPUTDIR)/$(SLUG).$(EXT)
-	${EDITOR} ${INPUTDIR}/${SLUG}.${EXT} &
+	echo "Title: $(NAME)" >  $(PAGESDIR)/${FILENAME}.$(EXT)
+	echo "Slug: $(SLUG)"  >> $(PAGESDIR)/${FILENAME}.$(EXT)
+	echo "Category:"      >> $(PAGESDIR)/${FILENAME}.$(EXT)
+	echo "Tags:"	      >> $(PAGESDIR)/${FILENAME}.$(EXT)
+	echo "Summary:"	      >> $(PAGESDIR)/${FILENAME}.$(EXT)
+	${EDITOR} $(PAGESDIR)/${FILENAME}.$(EXT)
 else
 	@echo 'Variable NAME is not defined.'
 	@echo 'Do make newpost NAME='"'"'Post Name'"'"
@@ -95,30 +96,10 @@ endif
 
 editpost:
 ifdef NAME
-	${EDITOR} ${INPUTDIR}/${SLUG}.${EXT} &
+	${EDITOR} ${PAGESDIR}/${SLUG}.${EXT} &
 else
 	@echo 'Variable NAME is not defined.'
 	@echo 'Do make editpost NAME='"'"'Post Name'"'"
 endif
 
-newpage:
-ifdef NAME
-	echo "Title: $(NAME)" >  $(PAGESDIR)/$(SLUG).$(EXT)
-	echo "Slug: $(SLUG)" >> $(PAGESDIR)/$(SLUG).$(EXT)
-	echo ""	      >> $(PAGESDIR)/$(SLUG).$(EXT)
-	echo ""	      >> $(PAGESDIR)/$(SLUG).$(EXT)
-	${EDITOR} ${PAGESDIR}/${SLUG}.$(EXT)
-else
-	@echo 'Variable NAME is not defined.'
-	@echo 'Do make newpage NAME='"'"'Page Name'"'"
-endif
-
-editpage:
-ifdef NAME
-	${EDITOR} ${PAGESDIR}/${SLUG}.$(EXT)
-else
-	@echo 'Variable NAME is not defined.'
-	@echo 'Do make editpage NAME='"'"'Page Name'"'"
-endif
-
-.PHONY: html help clean regenerate serve serve-global devserver publish newpost editpost newpage editpage
+.PHONY: html help clean regenerate serve serve-global devserver publish newpost editpost
