@@ -49,16 +49,17 @@ For your DNS provider, setup the following records (replacing the CNAME with you
 
 This changes how code is being deployed.  Rather than generating and pushing static content to an S3 bucket, we can simply push this to the default `gh-pages` branch.  From the the root of the project we could run...
 
-```bash
-# Setup the environment
-python3 -m venv env/
-source env/bin/activate
-pip install -r requirements.txt
+	:::bash
+	# Setup the environment
+	python3 -m venv env/
+	source env/bin/activate
+	pip install -r requirements.txt
 
-# Make and publish the content
-make html
-ghp-import output -p
-```
+Then, to build and publish the content
+
+	:::bash
+	make html
+	ghp-import output -p
 
 I'm making use of the [ghp-import package](https://github.com/davisp/ghp-import).  It handles all of the commits/pushing of content, and wraps up some of the magic for creating CNAME files.
 
