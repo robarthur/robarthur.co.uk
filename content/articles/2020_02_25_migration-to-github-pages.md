@@ -1,7 +1,7 @@
 Title: Migrating Site from S3 to Github Pages
 Date: 2020-2-24 21:03
 Modified: 2020-2-24 21:03
-Category: Dev		
+Category: Dev
 Tags: meta, Github
 Slug: migration-from-s3-cloudfront-route53-to-github-pages
 Summary: I decided to move this site's hosting from S3 to Github Pages.  Why?  Why Not! ![Migrating from S3 to Github Pages](images/migrating-site-from-s3-to-github-pages.png){.img-center}
