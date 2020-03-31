@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://www.robarthur.co.uk/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="https://www.robarthur.co.uk/theme/pygments/friendly.min.css">
+  <link rel="stylesheet" type="text/css" href="https://www.robarthur.co.uk/theme/font-awesome/css/font-awesome.min.css">
+
+
+
+
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-106756061-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+<meta name="author" content="Rob Arthur" />
+<meta name="description" content="AWS Certificate Manager (ACM) provides the ability to provision and manage SSL/TLS certificates. ACM will attempt to verify the domain you&#39;re issuing a certificate for by using the administrative, registrant and technical contact emails from WHOIS records. But what if you have privacy protection enabled and these aren&#39;t available for public consumption? A combination of Route53, SES and S3 can provide a makeshift solution for this one time activity. This can be paticularly useful for .io domains and .uk domains with privacy protection enabled. In both cases no email contact is obfuscated in WHOIS records" />
+<meta name="keywords" content="AWS, SES, Route53">
+
+<meta property="og:site_name" content="Rob Arthur | Blog"/>
+<meta property="og:title" content="Validating Domain Ownership for SSL Certificates Using Amazon SES"/>
+<meta property="og:description" content="AWS Certificate Manager (ACM) provides the ability to provision and manage SSL/TLS certificates. ACM will attempt to verify the domain you&#39;re issuing a certificate for by using the administrative, registrant and technical contact emails from WHOIS records. But what if you have privacy protection enabled and these aren&#39;t available for public consumption? A combination of Route53, SES and S3 can provide a makeshift solution for this one time activity. This can be paticularly useful for .io domains and .uk domains with privacy protection enabled. In both cases no email contact is obfuscated in WHOIS records"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://www.robarthur.co.uk/validating-domain-ownership-for-ssl-certificate-using-amazon-ses.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2017-09-20 19:02:00-04:00"/>
+<meta property="article:modified_time" content="2017-09-19 19:02:00-04:00"/>
+<meta property="article:author" content="https://www.robarthur.co.uk/author/rob-arthur.html">
+<meta property="article:section" content="Dev"/>
+<meta property="article:tag" content="AWS"/>
+<meta property="article:tag" content="SES"/>
+<meta property="article:tag" content="Route53"/>
+<meta property="og:image" content="//s.gravatar.com/avatar/ed179e15a36dcb39b4e0b91633533499?s=240">
+
+  <title>Rob Arthur | Blog &ndash; Validating Domain Ownership for SSL Certificates Using Amazon SES</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="https://www.robarthur.co.uk">
+        <img src="//s.gravatar.com/avatar/ed179e15a36dcb39b4e0b91633533499?s=240" alt="Rob Arthur | Blog" title="Rob Arthur | Blog">
+      </a>
+      <h1><a href="https://www.robarthur.co.uk">Rob Arthur | Blog</a></h1>
+
+<p>Personal Blog for notes, thoughts and experiments</p>
+
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/rob-arthur-88016840/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/robarthur" target="_blank"><i class="fa fa-github"></i></a></li>
+        <li><a class="sc-twitter" href="https://twitter.com/rob_arthur1" target="_blank"><i class="fa fa-twitter"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="https://www.robarthur.co.uk">    Home
+</a>
+
+      <a href="/archives.html">Archives</a>
+      <a href="/categories.html">Categories</a>
+      <a href="/tags.html">Tags</a>
+
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="validating-domain-ownership-for-ssl-certificate-using-amazon-ses">Validating Domain Ownership for SSL Certificates Using Amazon SES</h1>
+    <p>
+          Posted on Wed 20 September 2017 in <a href="https://www.robarthur.co.uk/category/dev.html">Dev</a>
+
+
+        &#8226; 4 min read
+    </p>
+  </header>
+
+
+  <div>
+    <h2>Overview</h2>
+<p>When you request a certificate from <strong>Amazon Certificate Manager</strong>, you're required to validate ownership of the domain(s) that the certificate is valid for.  This is acheived by sending a verification email to the administrative, registrant and technical contacts in the WHOIS records.</p>
+<p><a href="http://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate.html">Additionally ACM will perform a lookup of the <strong>MX DNS record</strong> to send emails to the following contacts.</a></p>
+<ul>
+<li>administrator@your_domain_name</li>
+<li>hostmaster@your_domain_name</li>
+<li>postmaster@your_domain_name</li>
+<li>webmaster@your_domain_name</li>
+<li>admin@your_domain_name</li>
+</ul>
+<p>But what happens if you have privacy protection such that all of the WHOIS contact information is obfuscated, and no email server setup for your domain?  This is a pretty plausible situation for a website such as a personal blog, (like this one!) and that was the problem I faced when registering a certificate for this site.  Enabling privacy protection for a <strong>.uk domain</strong> is a manual process for Route53, which involed raising a support case, I didn't want to undo that, to validate my certificate to then have to re-enable.  I also didn't want to have to set up an expensive email server to handle a single email.  The same is true for <strong>.io domains</strong> where email contact information is obfuscated by default.</p>
+<h2>Amazon Simple Email Service</h2>
+<p>There's actually a slightly roundabout, but valid way to verify ownsership of our domain and validate the certificate using <strong>Amazon Simple Email Service</strong> (SES).</p>
+<p>SES provides the ability to send email, but crucially for this process also to receive email from a registered <strong>Route53 domain</strong> and route it to SNS, Lambda, S3 ...etc.</p>
+<h2>Lazy Disclamer</h2>
+<p>Despite all of the evangalism in the previous post about <a href="./static-website-s3-cloudfront-cloudformation.html"><strong>Infrastructure as Code</strong></a>, these are all 'clicky' instructions through the console.  The reason for this is because that's how I did it, and I don't think I'll being doing it enough to make automating it worthwhile!  In doing some reasearch for this I found a great article by <em>Simon-Pierre Gingras</em> about <a href="https://medium.com/poka-techblog/verify-domains-for-ses-using-cloudformation-8dd185c9b05c">Veryfing SES Domains Using Cloudformation</a>.  With a good mantra in there...</p>
+<blockquote>
+<p>If you’re using Route53 as your DNS provider, then you’re in for a treat! The SES console will offer you to add the TXT record to your Route53 hosted zone for you, by clicking the blue button
+...
+You must resist the temptation to click that button! Do not forget the 1st commandment of Infrastructure as Code:
+'Thou shalt not click the dreaded blue button'</p>
+</blockquote>
+<p>But in this case I've given into that temptation, and I'm pushing the button.</p>
+<h2>Validating the Certificate</h2>
+<p>So to validate our certificate we need to take the following steps:</p>
+<ol>
+<li>Validate our domain in SES</li>
+<li>Publish MX DNS record to enable delivery to enable mail delivery to SES</li>
+<li>Create a rule to route messages to the <code>admin@our_domain.com</code>  to a S3 bucket.</li>
+<li>Request and verify the ACM Certificate</li>
+</ol>
+<h3>Step 0.  Pre-requisites</h3>
+<p>Before running these steps ensure you have:</p>
+<ul>
+<li>A domain registered with <strong>Route 53</strong></li>
+<li><strong>IAM</strong> user with permissions for <strong>SES Full Access</strong> and <strong>S3 Full Access</strong>.  <a href="http://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#create-iam-users">(Try and follow best practices, please don't use root!)</a> </li>
+</ul>
+<h3>Step 1. Validate Our Domain in SES</h3>
+<p>Fortunately AWS makes this really easy (when you 'press the big blue button').  The first thing we want to do is assign a <strong>TXT DNS record</strong> with a verification string for our domain:</p>
+<p><img alt="Validating Domain Ownership for SSL Certificates Using Amazon SES - Validate Domain" class="img-center" src="images/validating-acm-certificate-with-ses-step-1-validate-domain.png"></p>
+<p>Wait for the <strong>Domain Identities Status</strong> to change to 'Verified'</p>
+<h3>Step 2. Publish MX DNS record to Route 53</h3>
+<p>Now that our domain is verified, we need to add a <a href="images/validating-acm-certificate-with-ses-step-2-publish-mx-record.png">MX (Mail Exchange) record</a> to our <strong>Route 53 Hosted Zone</strong>. </p>
+<p>The content of the record will depend on the <strong>AWS Region</strong> you're using for SES</p>
+<table>
+<thead>
+<tr>
+<th><strong>Region Name</strong></th>
+<th><strong> Region Identifier</strong></th>
+<th><strong> MX Record</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N. Virginia</td>
+<td>us-east-1</td>
+<td>10 inbound-smtp.us-east-1.amazonaws.com</td>
+</tr>
+<tr>
+<td>Oregon</td>
+<td>us-west-2</td>
+<td>10 inbound-smtp.us-west-2.amazonaws.com</td>
+</tr>
+<tr>
+<td>Ireland</td>
+<td>eu-west-1</td>
+<td>10 inbound-smtp.eu-west-1.amazonaws.com</td>
+</tr>
+</tbody>
+</table>
+<h3>Step 3. Route Admin Emails to an S3 Bucket</h3>
+<p>SES also provides a wizard that will create a S3 bucket with an appropriate <strong>bucket policy</strong>.  We're going set up a rule for the admin@your_domain_name email, but this could be any of the default ones above.</p>
+<p>Create a new rule set and a new rule as follows:</p>
+<blockquote>
+<p>For recpient one or many of those example emails above:</p>
+</blockquote>
+<p><img alt="Validating Domain Ownership for SSL Certificates Using Amazon SES - Validate Domain" class="img-center" src="images/validating-acm-certificate-with-ses-step-3-1-recipient.png"></p>
+<blockquote>
+<p>For actions create a new S3 bucket:</p>
+</blockquote>
+<p><img alt="Validating Domain Ownership for SSL Certificates Using Amazon SES - Validate Domain" class="img-center" src="images/validating-acm-certificate-with-ses-step-3-2-actions.png"></p>
+<blockquote>
+<p>Fill in the rule details.  I've disabled spam filtering to ensure the verification email doesn't get caught in a filter:</p>
+</blockquote>
+<p><img alt="Validating Domain Ownership for SSL Certificates Using Amazon SES - Validate Domain" class="img-center" src="images/validating-acm-certificate-with-ses-step-3-3-rule-details.png"></p>
+<h3>Step 4. Request and verify the ACM Certificate</h3>
+<p>Worth mentioning at this point, that if you want to use this certificate with Cloudfront <strong>this needs to be generated in N. Virginia (us-east-1)</strong>.  Make sure you're working in this region while generating this certificate.</p>
+<p>Setup all of the domains you wish to use for this certificate.  This can include wildards if you want.</p>
+<p><img alt="Validating Domain Ownership for SSL Certificates Using Amazon SES - Validate Domain" class="img-center" src="images/validating-acm-certificate-with-ses-step-4-1-request-certificate.png"></p>
+<p>Review and request the certificate, then check the S3 bucket that you generated earlier.</p>
+<p>Hopefully you should see your verification email in there, it's will be given a random unique string as the email name.  Open that up and find the verficiation link.</p>
+<p><img alt="Validating Domain Ownership for SSL Certificates Using Amazon SES - Validate Domain" class="img-center" src="images/validating-acm-certificate-with-ses-step-4-2-validation-email.png"></p>
+<p>And finally your certificate is verified!  You can delete the SES setup if you want as it will cost $1/month.  Or keep it and do something clever like leverage SNS to forward those emails on to your personal email address.</p>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://www.robarthur.co.uk/tag/aws.html">AWS</a>
+      <a href="https://www.robarthur.co.uk/tag/ses.html">SES</a>
+      <a href="https://www.robarthur.co.uk/tag/route53.html">Route53</a>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy; Rob Arthur 2020</p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Rob Arthur | Blog ",
+  "url" : "https://www.robarthur.co.uk",
+  "image": "//s.gravatar.com/avatar/ed179e15a36dcb39b4e0b91633533499?s=240",
+  "description": "Personal Blog of Rob Arthur, interested in software development, devops, AWS/Cloud."
+}
+</script>
+
+</body>
+</html>

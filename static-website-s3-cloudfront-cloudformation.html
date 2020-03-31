@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://www.robarthur.co.uk/theme/stylesheet/style.min.css">
+
+  <link rel="stylesheet" type="text/css" href="https://www.robarthur.co.uk/theme/pygments/friendly.min.css">
+  <link rel="stylesheet" type="text/css" href="https://www.robarthur.co.uk/theme/font-awesome/css/font-awesome.min.css">
+
+
+
+
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-106756061-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+<meta name="author" content="Rob Arthur" />
+<meta name="description" content="First post! First in series of &#39;meta&#39; posts describing the build, architecture, deployment and CI process for this website. robarthur.co.uk is built and deployed using AWS hosting tools, a python static site generator and AWS hosted CI pipeline.Simple Storage Solution (S3)." />
+<meta name="keywords" content="meta, AWS, Cloudformation, S3">
+
+<meta property="og:site_name" content="Rob Arthur | Blog"/>
+<meta property="og:title" content="Deploying a Static Webiste Using Cloudformation"/>
+<meta property="og:description" content="First post! First in series of &#39;meta&#39; posts describing the build, architecture, deployment and CI process for this website. robarthur.co.uk is built and deployed using AWS hosting tools, a python static site generator and AWS hosted CI pipeline.Simple Storage Solution (S3)."/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:url" content="https://www.robarthur.co.uk/static-website-s3-cloudfront-cloudformation.html"/>
+<meta property="og:type" content="article"/>
+<meta property="article:published_time" content="2017-09-18 20:03:00-04:00"/>
+<meta property="article:modified_time" content="2017-09-18 20:03:00-04:00"/>
+<meta property="article:author" content="https://www.robarthur.co.uk/author/rob-arthur.html">
+<meta property="article:section" content="Dev"/>
+<meta property="article:tag" content="meta"/>
+<meta property="article:tag" content="AWS"/>
+<meta property="article:tag" content="Cloudformation"/>
+<meta property="article:tag" content="S3"/>
+<meta property="og:image" content="//s.gravatar.com/avatar/ed179e15a36dcb39b4e0b91633533499?s=240">
+
+  <title>Rob Arthur | Blog &ndash; Deploying a Static Webiste Using Cloudformation</title>
+
+</head>
+<body>
+  <aside>
+    <div>
+      <a href="https://www.robarthur.co.uk">
+        <img src="//s.gravatar.com/avatar/ed179e15a36dcb39b4e0b91633533499?s=240" alt="Rob Arthur | Blog" title="Rob Arthur | Blog">
+      </a>
+      <h1><a href="https://www.robarthur.co.uk">Rob Arthur | Blog</a></h1>
+
+<p>Personal Blog for notes, thoughts and experiments</p>
+
+      <ul class="social">
+        <li><a class="sc-linkedin" href="https://www.linkedin.com/in/rob-arthur-88016840/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+        <li><a class="sc-github" href="https://github.com/robarthur" target="_blank"><i class="fa fa-github"></i></a></li>
+        <li><a class="sc-twitter" href="https://twitter.com/rob_arthur1" target="_blank"><i class="fa fa-twitter"></i></a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+  <main>
+
+    <nav>
+      <a href="https://www.robarthur.co.uk">    Home
+</a>
+
+      <a href="/archives.html">Archives</a>
+      <a href="/categories.html">Categories</a>
+      <a href="/tags.html">Tags</a>
+
+
+    </nav>
+
+<article class="single">
+  <header>
+      
+    <h1 id="static-website-s3-cloudfront-cloudformation">Deploying a Static Webiste Using Cloudformation</h1>
+    <p>
+          Posted on Mon 18 September 2017 in <a href="https://www.robarthur.co.uk/category/dev.html">Dev</a>
+
+
+        &#8226; 2 min read
+    </p>
+  </header>
+
+
+  <div>
+    <h2>Overview</h2>
+<p>This first post covers the <strong>hosting and deployment</strong> for this website.  <a href="#">robarthur.co.uk</a> is deployed as a static website to <strong>Amazon Simple Storage Solution (S3)</strong>.  S3  is a great solution for deploying static content, as all of the work to handled by Amazon.  The infrastructure to host the website itself is defined as code and deployed using AWS Cloudformation.</p>
+<h2>Architecture</h2>
+<p>The setup is mostly as defined in the AWS S3 docuemntation for <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-custom-domain-walkthrough.html">hosting a static website with a custom domain</a></p>
+<p><img alt="Static Website Architecture - Cloudformation Template" class="img-center" src="images/static-website-s3-architecture.png"></p>
+<p>Key services utilised are:</p>
+<ul>
+<li><strong>S3</strong> - For hosting and serving static content.  The three buckets hold 1) The static website content, 2) Manage redirects from the 'naked' domain to the 'www' domain, 3) Hold HTTP acces logs for the site</li>
+<li><strong>Cloudfront</strong> - A CDN for handling globally distributed content, including edge level caching. </li>
+<li><strong>Route53</strong> - DNS provider for the website.</li>
+<li><strong>Certificate Manager</strong> - Provision and manage SSL certificates</li>
+<li><strong>Cloudformation</strong> - A template defines all of the above infrastructure as code.  Cloudformation provisions the infrastructure as defined in the template.</li>
+</ul>
+<h2>Infrastructure as Code</h2>
+<p>A <strong>Cloudformation template</strong> defines all of the website infrastructure as code.  The template used to build the hosting infrastructure is defined here: </p>
+<p><a href="https://github.com/robarthur/robarthur.co.uk/blob/master/cloudformation/s3-static-website.yml">https://github.com/robarthur/robarthur.co.uk/blob/master/cloudformation/s3-static-website.yml</a></p>
+<p>Credit to <em>Sergej Jevsejev</em>, for the <a href="https://github.com/sjevs/cloudformation-s3-static-website-with-cloudfront-and-route-53">basis of this template</a>.</p>
+<h2>Infrastructure Deployment</h2>
+<p>The cloudformation template can be deployed from the <a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-cli-creating-stack.html">AWS Console or via the command line</a>.</p>
+<p>We need to pass a number of parameters to this <strong>Cloudformation stack</strong>, these are the domain name of a valid <a href="http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/registrar.html"><strong>Route53 hosted domain</strong></a>, and the <a href="http://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request.html"><strong>Amazon Resource Name</strong> (ARN) of a SSL certificate</a>.</p>
+<p>Assuming you have these and AWS credentials credentials configured with appropriate IAM priviliges, you could deploy this blog from the command line using the following command:</p>
+<div class="highlight"><pre><span></span><code>git clone https://github.com/robarthur/robarthur.co.uk.git
+<span class="nb">cd</span> robarthur.co.uk
+aws cloudformtaion create-stack --stack-name s3-static-website <span class="se">\</span>
+    --template-body file://cloudformation/s3-static-website.yml
+    --parameters  <span class="nv">ParameterKey</span><span class="o">=</span>DomainName,ParameterValue<span class="o">=</span>mywebsite.com <span class="nv">ParameterKey</span><span class="o">=</span>FullDomainName, <span class="se">\</span>
+                  <span class="nv">ParameterValue</span><span class="o">=</span>www.mywebsite.com <span class="nv">ParameterKey</span><span class="o">=</span>AcmCertificateArn, <span class="se">\</span>
+                  <span class="nv">ParameterValue</span><span class="o">=</span>arn:aws:acm:us-east-1:1234567890:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+</code></pre></div>
+
+
+<h2>Future Enhancements</h2>
+<p>This is a good start but how could it be improved?</p>
+<ul>
+<li><strong>Origin Access Identity</strong> - We could use an origin access identity to restrict direct access to the S3 bucket that hosts the webiste.</li>
+<li><strong>Additional Logging</strong> - As well as HTTP access logs to the S3 buckets, we can configure Cloudfront access logs.</li>
+<li><strong>Continuous Integration</strong> -  A future post will cover leveraging AWS Code Build/Code Deploy to deploy content from a static site generator to S3 on update.</li>
+</ul>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="https://www.robarthur.co.uk/tag/meta.html">meta</a>
+      <a href="https://www.robarthur.co.uk/tag/aws.html">AWS</a>
+      <a href="https://www.robarthur.co.uk/tag/cloudformation.html">Cloudformation</a>
+      <a href="https://www.robarthur.co.uk/tag/s3.html">S3</a>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy; Rob Arthur 2020</p>
+<p>    Powered by <a href="http://getpelican.com" target="_blank">Pelican</a> - <a href="https://github.com/alexandrevicenzi/flex" target="_blank">Flex</a> theme by <a href="http://alexandrevicenzi.com" target="_blank">Alexandre Vicenzi</a>
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Rob Arthur | Blog ",
+  "url" : "https://www.robarthur.co.uk",
+  "image": "//s.gravatar.com/avatar/ed179e15a36dcb39b4e0b91633533499?s=240",
+  "description": "Personal Blog of Rob Arthur, interested in software development, devops, AWS/Cloud."
+}
+</script>
+
+</body>
+</html>
